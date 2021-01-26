@@ -194,7 +194,9 @@ summary {
 
 <div id="first-lets-do-it-in-r" class="section level2">
 <h2>First, let’s do it in R</h2>
-<pre class="r"><code>library(dbplyr)
+<pre class="r"><code>mycurrentdirectory = dirname(rstudioapi::getActiveDocumentContext()$path)
+setwd(mycurrentdirectory)
+library(dbplyr)
 library(dplyr)</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;dplyr&#39;</code></pre>
@@ -398,6 +400,111 @@ mtcars2 &lt;- within(mtcars, {
 summary(mtcars2)
 </pre>
 </div>
+<pre class="r"><code>head(mtcars)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">mpg</th>
+<th align="right">cyl</th>
+<th align="right">disp</th>
+<th align="right">hp</th>
+<th align="right">drat</th>
+<th align="right">wt</th>
+<th align="right">qsec</th>
+<th align="right">vs</th>
+<th align="right">am</th>
+<th align="right">gear</th>
+<th align="right">carb</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Mazda RX4</td>
+<td align="right">21.0</td>
+<td align="right">6</td>
+<td align="right">160</td>
+<td align="right">110</td>
+<td align="right">3.90</td>
+<td align="right">2.620</td>
+<td align="right">16.46</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">Mazda RX4 Wag</td>
+<td align="right">21.0</td>
+<td align="right">6</td>
+<td align="right">160</td>
+<td align="right">110</td>
+<td align="right">3.90</td>
+<td align="right">2.875</td>
+<td align="right">17.02</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">Datsun 710</td>
+<td align="right">22.8</td>
+<td align="right">4</td>
+<td align="right">108</td>
+<td align="right">93</td>
+<td align="right">3.85</td>
+<td align="right">2.320</td>
+<td align="right">18.61</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Hornet 4 Drive</td>
+<td align="right">21.4</td>
+<td align="right">6</td>
+<td align="right">258</td>
+<td align="right">110</td>
+<td align="right">3.08</td>
+<td align="right">3.215</td>
+<td align="right">19.44</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Hornet Sportabout</td>
+<td align="right">18.7</td>
+<td align="right">8</td>
+<td align="right">360</td>
+<td align="right">175</td>
+<td align="right">3.15</td>
+<td align="right">3.440</td>
+<td align="right">17.02</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Valiant</td>
+<td align="right">18.1</td>
+<td align="right">6</td>
+<td align="right">225</td>
+<td align="right">105</td>
+<td align="right">2.76</td>
+<td align="right">3.460</td>
+<td align="right">20.22</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>aggregate(mpg ~ cyl, data=mtcars, mean)</code></pre>
 <table>
 <thead>
@@ -476,17 +583,94 @@ summary(mtcars2)
 <pre class="r"><code>results = mtcars %&gt;%
   group_by(cyl) %&gt;%
   summarise(mean_mpg = mean(mpg))
-results = mtcars %&gt;%
+results</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">cyl</th>
+<th align="right">mean_mpg</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">4</td>
+<td align="right">26.66364</td>
+</tr>
+<tr class="even">
+<td align="right">6</td>
+<td align="right">19.74286</td>
+</tr>
+<tr class="odd">
+<td align="right">8</td>
+<td align="right">15.10000</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>results = mtcars %&gt;%
   group_by(cyl, gear) %&gt;%
   summarise(mean_mpg = mean(mpg))</code></pre>
 <pre><code>## `summarise()` has grouped output by &#39;cyl&#39;. You can override using the `.groups` argument.</code></pre>
-<p>So I’ve already made my Tabel mtcars so i’m hashing it out so the script can progress</p>
-<pre class="r"><code>#as.data.frame(results)
-#con &lt;- DBI::dbConnect(RSQLite::SQLite(), &quot;mtcars.sqlite3&quot;)
-#DBI::dbWriteTable(con, &quot;mtcars&quot;, mtcars)
-#DBI::dbDisconnect(con)
+<pre class="r"><code>## `summarise()` regrouping output by &#39;cyl&#39; (override with `.groups` argument)
 
-con &lt;- DBI::dbConnect(RSQLite::SQLite(), &quot;mtcars.sqlite3&quot;)
+as.data.frame(results)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">cyl</th>
+<th align="right">gear</th>
+<th align="right">mean_mpg</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">4</td>
+<td align="right">3</td>
+<td align="right">21.500</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">26.925</td>
+</tr>
+<tr class="odd">
+<td align="right">4</td>
+<td align="right">5</td>
+<td align="right">28.200</td>
+</tr>
+<tr class="even">
+<td align="right">6</td>
+<td align="right">3</td>
+<td align="right">19.750</td>
+</tr>
+<tr class="odd">
+<td align="right">6</td>
+<td align="right">4</td>
+<td align="right">19.750</td>
+</tr>
+<tr class="even">
+<td align="right">6</td>
+<td align="right">5</td>
+<td align="right">19.700</td>
+</tr>
+<tr class="odd">
+<td align="right">8</td>
+<td align="right">3</td>
+<td align="right">15.050</td>
+</tr>
+<tr class="even">
+<td align="right">8</td>
+<td align="right">5</td>
+<td align="right">15.400</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>con &lt;- DBI::dbConnect(RSQLite::SQLite(), &quot;mtcars.sqlite3&quot;)
+DBI::dbWriteTable(con, &quot;mtcars&quot;, mtcars)
+DBI::dbDisconnect(con)
+
+list.files(path = mycurrentdirectory, &quot;mtcars.sqlite3&quot;)</code></pre>
+<pre><code>## [1] &quot;mtcars.sqlite3&quot;</code></pre>
+<pre class="r"><code>con &lt;- DBI::dbConnect(RSQLite::SQLite(), &quot;mtcars.sqlite3&quot;)
 mtcars2 &lt;- tbl(con, &quot;mtcars&quot;)
 g = mtcars2 %&gt;% 
   group_by(cyl) %&gt;%
@@ -556,11 +740,15 @@ mtcars.groupby([&#39;cyl&#39;])[&#39;mpg&#39;].mean()</code></pre>
 ##      5.0     15.400
 ## Name: mpg, dtype: float64</code></pre>
 <pre class="python"><code>import sqlite3 # Built into the Python language!
-con = sqlite3.connect</code></pre>
-<p>Same here, i’m hasing out importing since my mtcars is already added to the database. i ran this many times.</p>
-<pre class="python"><code>#mtcars.to_sql(&quot;mtcars&quot;, con)
-#con.close()
-import pandas as pd
+con = sqlite3.connect(&quot;mtcars_from_pandas.sqlite3&quot;)
+# Add our data frame to the mtcars table in the database
+mtcars.to_sql(&quot;mtcars&quot;, con)
+con.close()
+
+from os import listdir
+listdir()</code></pre>
+<pre><code>## [&#39;Advanced_Informatics_HW2.html&#39;, &#39;Advanced_Informatics_HW2.Rmd&#39;, &#39;Chapter 5 Dplyr.R&#39;, &#39;mtcars.sqlite3&#39;, &#39;mtcars_from_pandas.sqlite3&#39;]</code></pre>
+<pre class="python"><code>import pandas as pd
 con = sqlite3.connect(&quot;mtcars_from_pandas.sqlite3&quot;)
 df = pd.read_sql(&quot;select * from mtcars&quot;, con)
 df.head()</code></pre>
