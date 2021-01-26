@@ -1,0 +1,89 @@
+---
+title: "Advanced Informatics HW2"
+output: html_document
+---
+## First, let's do it in R
+
+```{r}
+library(dbplyr)
+library(dplyr)
+library(RSQLite)
+library(printr)
+
+data(mtcars)
+help(mtcars)
+```
+
+```{r}
+aggregate(mpg ~ cyl, data=mtcars, mean)
+aggregate(mpg ~ cyl + gear, data=mtcars, mean)
+
+results = mtcars %>%
+  group_by(cyl) %>%
+  summarise(mean_mpg = mean(mpg))
+results = mtcars %>%
+  group_by(cyl, gear) %>%
+  summarise(mean_mpg = mean(mpg))
+```
+
+So I've already made my Tabel mtcars so i'm hashing it out so 
+the script can progress
+
+```{r}
+#as.data.frame(results)
+#con <- DBI::dbConnect(RSQLite::SQLite(), "mtcars.sqlite3")
+#DBI::dbWriteTable(con, "mtcars", mtcars)
+#DBI::dbDisconnect(con)
+
+con <- DBI::dbConnect(RSQLite::SQLite(), "mtcars.sqlite3")
+mtcars2 <- tbl(con, "mtcars")
+g = mtcars2 %>% 
+  group_by(cyl) %>%
+  summarise(mean_mpg=mean(mpg))
+
+g %>% show_query()
+
+result = g %>% collect()
+as.data.frame(result)
+```
+
+## Now, let's do it in Python!!!
+
+```{r reticulate, include=FALSE}
+library(reticulate)
+data(mtcars)
+help(mtcars)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{python}
+mtcars = r.mtcars
+mtcars.head()
+```
+
+```{python}
+import pandas
+mtcars.groupby(['cyl'])['mpg'].mean()
+mtcars.groupby(['cyl', 'gear'])['mpg'].mean()
+```
+
+```{python}
+import sqlite3 # Built into the Python language!
+con = sqlite3.connect
+```
+Same here, i'm hasing out importing since my mtcars is already added to the database. i ran this many times. 
+```{python}
+#mtcars.to_sql("mtcars", con)
+#con.close()
+import pandas as pd
+con = sqlite3.connect("mtcars_from_pandas.sqlite3")
+df = pd.read_sql("select * from mtcars", con)
+df.head()
+```
+
+```{python}
+df = pd.read_sql("select cyl, avg(mpg) from mtcars group by cyl", con)
+df.head()
+df = pd.read_sql("select cyl, gear, avg(mpg) from mtcars group by cyl, gear", con)
+df.head()
+```
